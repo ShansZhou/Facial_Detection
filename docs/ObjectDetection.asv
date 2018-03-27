@@ -1,0 +1,29 @@
+%% input target and source image
+boxImg = imread('box.png');
+figure;imshow(boxImg);title('Box');
+sceneImg = imread('scene.png');
+figure;imshow(sceneImg);title('Target Scene');
+
+targetImg = boxImage(:,:,1);
+sourceImg = sceneImg(:,:,1);
+%% detect feature points
+boxPoints = detectSURFFeatures(targetImg);
+scenePoints = detectSURFFeatures(sourceImg);
+
+figure;imshow(targetImg);title('100 strongest features points from Box');
+hold on;
+plot(selectStrongest(boxPoints, 100));
+
+figure;imshow(sourceImg);title('300 strongest features points from Scene');
+hold on;
+plot(selectStrongest(scenePoints, 300));
+
+%% extracing feature descriptors
+[boxFeatures, boxPoints] = extractFeatures(targetImg, boxPoints);
+[sceneFeatures, scenePoints] = extractFeatures(sourceImg, scenePoints);
+
+boxPairs = matchFeatures(boxFeatures, sceneFeatures);
+matchedBoxPoints = boxPoints(boxPairs(:,1),:);
+matchedScenePoints = scenePoints(boxPairs(:,2),:);
+figure;
+showMatchedFeatures(targetImg, sourceImg, matchedBoxPoints, matchedScenePoints, 'mortage'
